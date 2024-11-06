@@ -111,7 +111,7 @@ static unsigned char* music_start;    // current music start pointer
 static unsigned char* music_end;      // current music end pointer
 static unsigned char* music_memory;   // current location of cached music
 
-int samples_per_midiclock;     // multiplier for midi clocks
+extern "C" int samples_per_midiclock;     // multiplier for midi clocks
 
 void M_PaintMusic();
 

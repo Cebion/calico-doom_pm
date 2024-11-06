@@ -44,6 +44,8 @@
 #include "gl_framebuffer.h"
 #include "gl_drawcmd.h"
 
+renderintr_t *g_renderer;
+
 //=============================================================================
 //
 // Primitives and utilities

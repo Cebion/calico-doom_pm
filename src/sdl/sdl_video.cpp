@@ -41,7 +41,9 @@
 #include "../rb/valloc.h"
 #include "../renderintr/ri_interface.h"
 #include "../gl/gl_render.h"
+#ifndef DISABLE_GL4_RENDERER
 #include "../gl4/gl4_render.h"
+#endif
 
 //=============================================================================
 //
@@ -62,10 +64,15 @@ SDL_GLContext  glcontext;
 enum renderer_e
 {
     RENDERER_GL1_1, // GL 1.1 renderer
+#ifndef DISABLE_GL4_RENDERER
     RENDERER_GL4,   // GL 4 renderer
-
+#endif
     RENDERER_MIN = RENDERER_GL1_1,
+#ifndef DISABLE_GL4_RENDERER
     RENDERER_MAX = RENDERER_GL4
+#else
+    RENDERER_MAX = RENDERER_GL1_1
+#endif
 };
 
 static int screenwidth     = CALICO_ORIG_SCREENWIDTH;
@@ -75,7 +82,7 @@ static int monitornum      = 0;
 static hal_aspect_t aspect = HAL_ASPECT_NOMINAL;
 static int aspectNum       = 4;
 static int aspectDenom     = 3;
-static int renderer        = RENDERER_GL4;
+static int renderer        = RENDERER_GL1_1;
 
 static cfgrange_t<int> swRange = { 320, 32768 };
 static cfgrange_t<int> shRange = { 224, 32768 };
@@ -123,17 +130,19 @@ static float screenyiscale;
 //
 static void SDL2_setRenderer()
 {
-    switch(renderer)
-    {
-    case RENDERER_GL1_1:
-        GL_SelectRenderer();
-        break;
-    case RENDERER_GL4:
-        GL4_SelectRenderer();
-        break;
-    default:
-        hal_platform.fatalError("Unknown value for renderer (%d)", renderer);
-    }
+	switch(renderer)
+	{
+	case RENDERER_GL1_1:
+		GL_SelectRenderer();
+		break;
+	#ifndef DISABLE_GL4_RENDERER
+	case RENDERER_GL4:
+		GL_SelectRenderer();
+		break;
+	#endif
+	default:
+		hal_platform.fatalError("Unknown value for renderer (%d)", renderer);
+	}
     g_renderer->InitRenderer(curscreenwidth, curscreenheight);
 }
 
@@ -216,12 +225,14 @@ hal_bool SDL2_SetVideoMode(int width, int height, int fs, int mnum)
    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,  32);
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,  1);
 
-   if(renderer == RENDERER_GL4)
-   {
-       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-   }
+	#ifndef DISABLE_GL4_RENDERER
+	if(renderer == RENDERER_GL4)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	}
+	#endif
 
    if(!(mainwindow = SDL_CreateWindow("Calico", x, y, width, height, flags)))
    {
@@ -260,7 +271,11 @@ hal_bool SDL2_SetVideoMode(int width, int height, int fs, int mnum)
    SDL2_ToggleGLSwap(HAL_TRUE);
 
    // wake up RB system
-   RB_InitDefaultState(renderer == RENDERER_GL4 ? 4 : 1);
+	#ifndef DISABLE_GL4_RENDERER
+	RB_InitDefaultState(renderer == RENDERER_GL4 ? 4 : 1);
+	#else
+	RB_InitDefaultState(1);
+	#endif
 
    // update appstate maintenance
    hal_appstate.updateFocus();

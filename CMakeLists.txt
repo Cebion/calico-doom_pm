@@ -5,6 +5,10 @@ project("Calico Doom" C CXX)
 
 add_definitions("-Wall -Wextra")
 
+add_compile_options(
+    -fsigned-char         # Force char to be signed
+)
+
 # Once CMake 3.1 is required, you can replace this with CMAKE_CXX_STANDARD
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "--std=gnu++17 ${CMAKE_CXX_FLAGS}")

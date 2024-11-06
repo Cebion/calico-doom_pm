@@ -81,9 +81,14 @@ set(ELIB_SOURCES
     elib/qstring.cpp    elib/qstring.h
                         elib/swap.h
     elib/zone.cpp       elib/zone.h)
+	
+
 
 set(GL_SOURCES
     gl/gl_render.cpp    gl/gl_render.h
+    gl/gl_drawcmd.cpp   gl/gl_drawcmd.h
+    gl/gl_framebuffer.cpp gl/gl_framebuffer.h
+    gl/gl_textures.cpp   gl/gl_textures.h
     gl/resource.cpp     gl/resource.h)
 
 set(HAL_SOURCES

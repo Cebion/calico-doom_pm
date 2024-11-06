@@ -242,5 +242,16 @@ float *SfxSample_GetSamples(PCSFXSAMPLE sfx)
    return sfx->getSamples();
 }
 
+size_t SfxSample_GetLoopOffset(PCSFXSAMPLE sfx)
+{
+    return 0; // Default implementation - no loop
+}
+
+hal_bool SfxSample_GetLoop(PCSFXSAMPLE sfx)
+{
+    return HAL_FALSE; // Default implementation - no loop
+}
+
+
 // EOF
 
